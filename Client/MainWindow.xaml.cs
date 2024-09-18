@@ -1,5 +1,7 @@
 ﻿using Client.Commands;
+using Microsoft.Xaml.Behaviors.Media;
 using System.ComponentModel;
+using System.IO;
 using System.Net;
 using System.Net.Sockets;
 using System.Runtime.CompilerServices;
@@ -13,10 +15,13 @@ namespace Client;
 public partial class MainWindow : Window, INotifyPropertyChanged
 {
     private List<string> procList;
+    private string text1;
 
     public List<string> CommandList { get; set; } = ["Start", "Kill"];
 
     public List<string> ProcList { get => procList; set { procList = value; OnPropertyChanged(); } }
+
+    public string text { get => text1; set { text1 = value; OnPropertyChanged(); } }
 
 
     public MainWindow()
@@ -44,15 +49,22 @@ public partial class MainWindow : Window, INotifyPropertyChanged
 
         try
         {
-            client.Connect(ep); 
+            client.Connect(ep);
 
-            if(client.Connected)
+            if (client.Connected)
             {
                 while (true)
                 {
+                    var stream = client.GetStream();
+                    StreamReader reader = new StreamReader(stream);
 
+                    string json = reader.ReadToEnd();
+
+                    List<ProcessDTO> myList = [];
+
+                    myList = JsonSerializer.Deserialize<ProcessDTO>(json);
                 }
-               
+
             }
         }
 
@@ -85,6 +97,5 @@ public partial class MainWindow : Window, INotifyPropertyChanged
     {
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
     }
-
 
 }
