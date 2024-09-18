@@ -14,12 +14,12 @@
             <ColumnDefinition/>
         </Grid.ColumnDefinitions>
 
-        <ListBox Grid.Column="0" BorderThickness="2" Margin="20" BorderBrush="DarkViolet" ItemsSource="{Binding ProcList,UpdateSourceTrigger=PropertyChanged}"/>
+        <ListBox Name="myListBox" Grid.Column="0" BorderThickness="2" Margin="20" BorderBrush="DarkViolet" ItemsSource="{Binding ProcList,UpdateSourceTrigger=PropertyChanged}" SelectionChanged="myListBox_SelectionChanged"/>
         <StackPanel Grid.Column="1" Margin="20 0 " VerticalAlignment="Center">
 
             <Button Content="Refresh" FontSize="17" Margin="0 20 0 0" Command="{Binding RefreshCommand}"/>
             <TextBox Height="30"  Margin="0 40 0 0" Name="txtBox" Text="{Binding text,UpdateSourceTrigger=PropertyChanged}"/>
-            <ComboBox Margin="0 40 0 0" ItemsSource="{Binding CommandList}"/>
+            <ComboBox Name="comBox" Margin="0 40 0 0" ItemsSource="{Binding CommandList}"/>
             <Button Content="Run" FontSize="17" Margin="0 60 0 0" Command="{Binding RunCommand}"/>
 
         </StackPanel>

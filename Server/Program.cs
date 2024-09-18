@@ -6,11 +6,14 @@ using System.Text;
 using System.Text.Json;
 
 var port = 27001;
+var port1 = 27000;
 var ip = IPAddress.Parse("10.1.18.8");
 
 var ep = new IPEndPoint(ip, port);
+var ep1 = new IPEndPoint(ip, port1);
 
 using var listener = new TcpListener(ep);
+using var listener1 = new TcpListener(ep1);
 
 listener.Start();
 
@@ -20,14 +23,37 @@ while (true)
 
     var procList = Process.GetProcesses().Select(p => new ProcessDTO(p.Id, p.ProcessName)).ToList();
     var option = new JsonSerializerOptions { WriteIndented = true };
-    var json = JsonSerializer.Serialize(procList, option);
-
-    byte[] byteArray = Encoding.UTF8.GetBytes(json);
 
     var stream = client.GetStream();
-    stream.Write(byteArray, 0, byteArray.Length);
 
+    for (int i = 0; i < procList.Count; i++)
+    {
 
+        var json = JsonSerializer.Serialize(procList[i], option);
+        byte[] byteArray = Encoding.UTF8.GetBytes(json);
+        stream.Write(byteArray, 0, byteArray.Length);
+
+    }
+
+    client = listener1.AcceptTcpClient();
+
+    stream = client.GetStream();
+
+    var reader = new StreamReader(stream);
+    var result = reader.ReadToEnd();
+    var command = JsonSerializer.Deserialize<Command>(result);
+
+    if (command.Type == "Start")
+    {
+        var process = Process.GetProcessById(command.ProcessId);
+        process.Start();
+    }
+
+    else if (command.Type == "Kill")
+    {
+        var process = Process.GetProcessById(command.ProcessId);
+        process.Kill();
+    }
 
 }
 
